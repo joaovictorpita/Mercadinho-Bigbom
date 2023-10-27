@@ -30,24 +30,31 @@
     <div id="resultado"></div>
 
     <script>
-        var ryo = 1000;
-        var inventario = [];
-
+        // Função para atualizar a interface com os dados salvos
         function atualizarInterface() {
-            document.getElementById("ryo").textContent = ryo;
-            document.getElementById("inventario").textContent = inventario.join(', ');
+            document.getElementById("ryo").textContent = localStorage.getItem("ryo") || 1000; // Valor padrão de 1000 Ryo
+            document.getElementById("inventario").textContent = localStorage.getItem("inventario") || "";
         }
 
         function adicionarRyo() {
             var quantidade = parseInt(document.getElementById("adicionar-ryo").value);
+            var ryo = parseInt(localStorage.getItem("ryo")) || 1000;
             ryo += quantidade;
+            localStorage.setItem("ryo", ryo);
             atualizarInterface();
         }
 
         function comprarItem(item, preco) {
+            var ryo = parseInt(localStorage.getItem("ryo")) || 1000;
             if (ryo >= preco) {
                 ryo -= preco;
-                inventario.push(item);
+                localStorage.setItem("ryo", ryo);
+                var inventario = localStorage.getItem("inventario") || "";
+                if (inventario !== "") {
+                    inventario += ", ";
+                }
+                inventario += item;
+                localStorage.setItem("inventario", inventario);
                 atualizarInterface();
                 document.getElementById("resultado").textContent = "Você comprou " + item + " por " + preco + " Ryo.";
             } else {
@@ -60,12 +67,17 @@
             if (senha === "2469") {
                 document.getElementById("adicionar-ryo").removeAttribute("disabled");
                 document.getElementById("botao-adicionar-ryo").removeAttribute("disabled");
+                atualizarInterface();
             } else {
                 alert("Senha incorreta!");
             }
         });
 
         document.getElementById("botao-adicionar-ryo").addEventListener("click", adicionarRyo);
+
+        // Chame a função para atualizar a interface quando a página é carregada
+        atualizarInterface();
     </script>
 </body>
 </html>
+
